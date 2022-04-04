@@ -1,0 +1,83 @@
+package webSearchEngine;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class TextSuggestion {
+	static HashMap<String, Integer> numbers = new HashMap<String, Integer>();
+	static ArrayList<String> key = new ArrayList<String>();
+	// finds strings with similar pattern and calls edit distance() on those strings
+	public static void findWord(File sourceFile, int fileNumber, Matcher match, String str)
+			throws FileNotFoundException, ArrayIndexOutOfBoundsException {
+		try {
+			BufferedReader my_rederObject = new BufferedReader(new FileReader(sourceFile));
+			String line = null;
+
+			while ((line = my_rederObject.readLine()) != null) {
+				match.reset(line);
+				while (match.find()) {
+					key.add(match.group());
+				}
+			}
+
+			my_rederObject.close();
+			for (int p = 0; p < key.size(); p++) {
+				numbers.put(key.get(p), editDistance(str.toLowerCase(), key.get(p).toLowerCase()));
+			}
+		} catch (Exception e) {
+			System.out.println("Exception:" + e);
+		}
+
+	}
+
+	
+	public static void suggestAltWord(String wordToSearch) {
+		String line = " ";
+		String regex = "[a-z0-9]+";
+
+		// Create a Pattern object
+		Pattern pattern = Pattern.compile(regex);
+		// Now create matcher object.
+		Matcher matcher = pattern.matcher(line);
+		int fileNumber = 0;
+
+		File dir = new File(PathFinder.textFilesPath);
+		File[] fileArray = dir.listFiles();
+		for (int i = 0; i < fileArray.length; i++) {
+			try {
+				findWord(fileArray[i], fileNumber, matcher, wordToSearch);
+				fileNumber++;
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+
+		Integer allowedDistance = 1; // Edit distance allowed
+		boolean matchFound = false; // set to true if word found with edit distance equal to allowedDistance
+
+		
+		int i = 0;
+		for (Map.Entry entry : numbers.entrySet()) {
+			if (allowedDistance == entry.getValue()) {
+				
+				i++;
+				
+				if(i==1)
+				System.out.println("Did you mean? ");
+				
+				System.out.print("(" + i + ") " + entry.getKey() + "\n");
+				matchFound = true;
+			}
+		}
+		if (!matchFound)
+			System.out.println("Entered word cannot be resolved....");
+	}
+
+}

@@ -1,0 +1,52 @@
+package webSearchEngine;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class TextSuggestion {
+	public static void suggestAltWord(String wordToSearch) {
+		String line = " ";
+		String regex = "[a-z0-9]+";
+
+		// Create a Pattern object
+		Pattern pattern = Pattern.compile(regex);
+		// Now create matcher object.
+		Matcher matcher = pattern.matcher(line);
+		int fileNumber = 0;
+
+		File dir = new File(PathFinder.textFilesPath);
+		File[] fileArray = dir.listFiles();
+		for (int i = 0; i < fileArray.length; i++) {
+			try {
+				findWord(fileArray[i], fileNumber, matcher, wordToSearch);
+				fileNumber++;
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+
+		Integer allowedDistance = 1; // Edit distance allowed
+		boolean matchFound = false; // set to true if word found with edit distance equal to allowedDistance
+
+		
+		int i = 0;
+		for (Map.Entry entry : numbers.entrySet()) {
+			if (allowedDistance == entry.getValue()) {
+				
+				i++;
+				
+				if(i==1)
+				System.out.println("Did you mean? ");
+				
+				System.out.print("(" + i + ") " + entry.getKey() + "\n");
+				matchFound = true;
+			}
+		}
+		if (!matchFound)
+			System.out.println("Entered word cannot be resolved....");
+	}
+
+}

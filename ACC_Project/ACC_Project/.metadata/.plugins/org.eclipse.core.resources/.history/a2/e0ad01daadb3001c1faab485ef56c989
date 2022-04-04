@@ -1,0 +1,5 @@
+package webSearchEngine;
+
+public class TextSuggestion {
+
+}
